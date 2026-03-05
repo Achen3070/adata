@@ -10,7 +10,7 @@ import logging
 
 from adata.__version__ import __version__
 from adata.bond import bond
-from adata.common.utils.sunrequests import SunProxy
+from adata.common.utils.sunrequests import SunProxy, RateLimiter
 from adata.fund import fund
 from adata.sentiment import sentiment
 from adata.stock import stock
@@ -30,6 +30,19 @@ def proxy(is_proxy=False, ip: str = None, proxy_url: str = None):
     SunProxy.set('is_proxy', is_proxy)
     SunProxy.set('ip', ip)
     SunProxy.set('proxy_url', proxy_url)
+    return
+
+
+def set_rate_limit(limit: int = 30, domain: str = None):
+    """
+    设置请求频率限制，默认每分钟30次请求
+    :param limit: 每分钟最大请求次数，默认30次
+    :param domain: 指定域名，如 'quote.eastmoney.com'；为None时设置全局默认值
+    """
+    if domain:
+        RateLimiter.set_domain_limit(domain, limit)
+    else:
+        RateLimiter.set_default_limit(limit)
     return
 
 
